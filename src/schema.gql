@@ -1,0 +1,86 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateReferenceInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input CreateUser {
+  email: String!
+  firstName: String!
+  lastName: String!
+  mobileNumber: Int!
+  password: String!
+  username: String!
+}
+
+type LoginResponse {
+  _id: ID
+  access_token: String!
+  email: String
+  firstName: String
+  lastName: String
+  mobileNumber: Int
+  username: String
+}
+
+input LoginUserInput {
+  password: String!
+  username: String!
+}
+
+type Mutation {
+  createReference(createReferenceInput: CreateReferenceInput!): Reference!
+  createUser(createUserDto: CreateUser!): User!
+  login(loginUserInput: LoginUserInput!): LoginResponse!
+  removeReference(id: Int!): Reference!
+  signup(signupInput: CreateUser!): User!
+  socialLogin(socialLoginInput: SocialOAuthInput!): SocialUser!
+  updateReference(updateReferenceInput: UpdateReferenceInput!): Reference!
+}
+
+type Query {
+  User(Username: String!): User
+  Users: [User!]!
+  findAll: String!
+  hello: String!
+  reference(id: Int!): Reference!
+  references: [Reference!]!
+}
+
+type Reference {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input SocialOAuthInput {
+  accessToken: String!
+  provider: String!
+}
+
+type SocialUser {
+  email: String
+  firstName: String
+  lastName: String
+  oAuthId: String
+  picture: String
+  username: String
+}
+
+input UpdateReferenceInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+type User {
+  _id: ID
+  email: String
+  firstName: String
+  lastName: String
+  mobileNumber: Int
+  password: String
+  username: String
+}
