@@ -1,5 +1,5 @@
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
-import { Query, UseGuards } from '@nestjs/common';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserInput } from './dto/login-input';
 import { LoginResponse } from './dto/login-response';
@@ -8,6 +8,7 @@ import { CreateUser } from 'src/user/dto/create-user.dto';
 import { User } from 'src/user/entities/user.entities';
 import { SocialOAuthInput } from './dto/social-oauth.dto';
 import { SocialUser } from 'src/user/entities/social-user.entities';
+import { ResultUnion } from './dto/union-types';
 
 @Resolver()
 export class AuthResolver {
@@ -27,10 +28,15 @@ export class AuthResolver {
     return this.authService.signup(signupInput);
   }
 
-  @Mutation(() => SocialUser || User)
+  @Mutation(() => ResultUnion)
   async socialLogin(
     @Args('socialLoginInput') socialLoginInput: SocialOAuthInput,
   ) {
     return await this.authService.socialLogin(socialLoginInput);
+  }
+
+  @Query(() => String)
+  async sendMail() {
+    return await this.authService.sendMail();
   }
 }

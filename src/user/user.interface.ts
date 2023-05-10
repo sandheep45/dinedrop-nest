@@ -1,4 +1,5 @@
 import { Document, Schema } from 'mongoose';
+import { Stream } from 'stream';
 
 export interface User extends Document {
   readonly _id: Schema.Types.ObjectId;
@@ -8,4 +9,11 @@ export interface User extends Document {
   readonly lastName: string;
   readonly mobileNumber: number;
   readonly password: string;
+}
+
+export interface FileUpload {
+  filename: string;
+  mimetype: string;
+  encoding: string;
+  createReadStream: () => Stream;
 }

@@ -14,7 +14,7 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req) {
-    return this.authService.googleAuthRedirect(req);
+    return this.authService.socialAuthRedirect(req);
   }
 
   @Get('facebook')
@@ -25,6 +25,6 @@ export class AuthController {
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
   async facebookAuthRedirect(@Req() req) {
-    return this.authService.facebookAuthRedirect(req);
+    return this.authService.socialAuthRedirect(req);
   }
 }

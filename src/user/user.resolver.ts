@@ -29,9 +29,4 @@ export class UserResolver {
   async createUser(@Args('createUserDto') createUserDto: CreateUser) {
     return this.userService.createUser(createUserDto);
   }
-
-  @Query(() => String)
-  async hello() {
-    return 'Hello World!';
-  }
 }

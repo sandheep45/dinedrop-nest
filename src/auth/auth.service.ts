@@ -1,19 +1,20 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
+import { MailerService } from '@nestjs-modules/mailer';
 import { CreateUser } from 'src/user/dto/create-user.dto';
 import { User } from 'src/user/entities/user.entities';
 import { UserService } from 'src/user/user.service';
 import { LoginResponse } from './dto/login-response';
 import { SocialOAuthInput } from './dto/social-oauth.dto';
 import { SocialUser } from 'src/user/entities/social-user.entities';
-import { jwtConstant } from 'src/constant';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private mailService: MailerService,
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
@@ -44,9 +45,7 @@ export class AuthService {
     };
     const { password, ...rest } = user;
     return {
-      access_token: this.jwtService.sign(payload, {
-        secret: jwtConstant.secret,
-      }),
+      access_token: this.jwtService.sign(payload),
       ...rest,
     };
   }
@@ -91,14 +90,7 @@ export class AuthService {
     return this.jwtService.signAsync(payload);
   }
 
-  async googleAuthRedirect(req) {
-    if (!req) {
-      return new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-    return req.user;
-  }
-
-  async facebookAuthRedirect(req) {
+  async socialAuthRedirect(req) {
     if (!req) {
       return new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -107,12 +99,33 @@ export class AuthService {
 
   async socialLogin(
     socialLoginInput: SocialOAuthInput,
-  ): Promise<SocialUser | User> {
+  ): Promise<LoginResponse | SocialUser> {
     const { provider, accessToken } = socialLoginInput;
     const userData = await this.userService.findUserFromSocialoAuth(
       provider,
       accessToken,
     );
     return userData;
+  }
+
+  async sendMail() {
+    const mailService = await this.mailService.sendMail({
+      to: 'sudip777sharma@gmail.com',
+      from: 'spp26041999@gmail.com',
+      subject: 'This mail is sent from dinedrop',
+      text: 'hey there',
+      html: '<h1>Mailservice add hogaya bhai  💪  😉  </h1>',
+    });
+
+    const rejectedMail = mailService.rejected.join(', ');
+
+    if (rejectedMail) {
+      return new HttpException(
+        `Mail not sent to ${rejectedMail}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return 'hello world';
   }
 }

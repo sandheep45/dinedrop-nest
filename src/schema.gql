@@ -37,7 +37,7 @@ type Mutation {
   login(loginUserInput: LoginUserInput!): LoginResponse!
   removeReference(id: Int!): Reference!
   signup(signupInput: CreateUser!): User!
-  socialLogin(socialLoginInput: SocialOAuthInput!): SocialUser!
+  socialLogin(socialLoginInput: SocialOAuthInput!): ResultUnion!
   updateReference(updateReferenceInput: UpdateReferenceInput!): Reference!
 }
 
@@ -45,15 +45,17 @@ type Query {
   User(Username: String!): User
   Users: [User!]!
   findAll: String!
-  hello: String!
   reference(id: Int!): Reference!
   references: [Reference!]!
+  sendMail: String!
 }
 
 type Reference {
   """Example field (placeholder)"""
   exampleField: Int!
 }
+
+union ResultUnion = LoginResponse | SocialUser
 
 input SocialOAuthInput {
   accessToken: String!

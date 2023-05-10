@@ -1,14 +1,19 @@
 import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { hash } from 'bcrypt';
 import { Model } from 'mongoose';
-import { SOCIAL_SDK_URLS, providers } from 'src/constant';
+import { SOCIAL_SDK_URLS, jwtConstant, providers } from 'src/constant';
 import { CreateUser } from './dto/create-user.dto';
 import { User } from './user.interface';
 import { SocialUser } from './entities/social-user.entities';
+import { JwtService } from '@nestjs/jwt';
+import { LoginResponse } from 'src/auth/dto/login-response';
 
 @Injectable()
 export class UserService {
-  constructor(@Inject(providers.user) private userModel: Model<User>) {}
+  constructor(
+    @Inject(providers.user) private userModel: Model<User>,
+    private jwtService: JwtService,
+  ) {}
 
   async createUser(createUser: CreateUser): Promise<User | Error> {
     try {
@@ -52,7 +57,7 @@ export class UserService {
   async findUserFromSocialoAuth(
     provider: string,
     access_token: string,
-  ): Promise<SocialUser | User> {
+  ): Promise<LoginResponse | SocialUser> {
     try {
       const res = await fetch(SOCIAL_SDK_URLS[provider] + access_token);
       const data = await res.json();
@@ -63,7 +68,23 @@ export class UserService {
         .exec();
 
       if (existingUser) {
-        return existingUser;
+        const payload = {
+          sub: existingUser._id.toString(),
+          username: existingUser.username,
+        };
+        const { _id, username, email, firstName, lastName, mobileNumber } =
+          existingUser;
+        return {
+          access_token: this.jwtService.sign(payload, {
+            secret: jwtConstant.secret,
+          }),
+          _id,
+          username,
+          email,
+          firstName,
+          lastName,
+          mobileNumber,
+        };
       }
 
       return {
